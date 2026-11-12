@@ -46,10 +46,18 @@
       <label class="search">
         <svg class="ic" aria-hidden="true"><use href="icons.svg#i-search"/></svg>
         <span class="sr">Search all challenges</span>
-        <input id="q" type="search" placeholder="Search: fire, bike, business, birds" autocomplete="off">
+        <input id="q" type="search" placeholder="Search a skill or your hobby: fire, music, coding, birds" autocomplete="off">
       </label>
     </div>
-    <p id="k1-note" class="note" hidden><b>K–1 is for guides.</b> Every K–1 challenge is led by a guide with the whole crew and done in a single day. Plan one per life skill across the year.</p>
+    <div class="filters" role="group" aria-label="Show only">
+      <span class="filters-label">Show only</span>
+      <button class="chip" type="button" data-filter="home" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-house"/></svg>Can do at home</button>
+      <button class="chip" type="button" data-filter="epic" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-flag"/></svg>Epics</button>
+      <button class="chip" type="button" data-filter="lab" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-users"/></svg>Recommended Labs</button>
+      <button class="chip" type="button" data-filter="any" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-sparkles"/></svg>Bring your hobby</button>
+      <button class="link-btn" type="button" id="clear-filters" hidden>Clear filters</button>
+    </div>
+    <div id="k1-note" class="note k1-note" hidden><p><b>K–1 is for guides.</b> Every K–1 challenge is led by a guide with the whole crew. Some fit in a day, and some run over several days or weeks.</p><ul><li>Plan to cover <b>at least 3 challenges in each of the 8 life skills</b> this year.</li><li>Run <b>at least 2 life skill challenges a week</b>.</li></ul><p><b>These are here to inspire you.</b> Make up your own challenges whenever you have a better idea for your crew. Just make sure each one builds one of the 8 life skills.</p></div>
 
     <div class="tree" id="tree" tabindex="-1">
       <svg class="links" id="links" aria-hidden="true"></svg>
@@ -66,10 +74,15 @@
     <ol class="steps">
       <li><h3>Pick</h3><p>Choose a challenge and tell your Field Guide your plan.</p></li>
       <li><h3>Practice</h3><p>Use the “Where to learn” links on each challenge, and ask for help.</p></li>
-      <li><h3>Show it</h3><p>Show your guide in person, at Test Day, or with proof from someone outside school.</p></li>
+      <li><h3>Show it</h3><p>Show your guide in person, any day you’re ready. A few challenges need big setup, like a pool swim or a night-sky test, so those happen on a scheduled test day.</p></li>
       <li><h3>Pass, or not yet</h3><p>No partial credit and no limit on retries. A not yet tells you exactly what to practice.</p></li>
       <li><h3>Rank up</h3><p>Every pass is a credit. Credits move you up your trail.</p></li>
     </ol>
+
+    <div class="bring">
+      <h3><svg class="ic" aria-hidden="true"><use href="icons.svg#i-sparkles"/></svg>Bring your hobby</h3>
+      <p>Into music, drawing, coding, games, a sport or birds? Lots of challenges can be done through the thing you already love, at a harder level than you’d push yourself alone. Look for the <b>Bring your hobby</b> tag, or search for your hobby: challenges about it come first, and challenges you can do through it are listed after them.</p>
+    </div>
 
     <div class="words">
       <h3>Four words to know</h3>
@@ -99,7 +112,7 @@
         <table>
           <thead><tr><th scope="col">Rank</th><th scope="col">Credits</th></tr></thead>
           <tbody>
-            <tr><td>Trailhead</td><td>4</td></tr>
+            <tr><td>Tracker</td><td>4</td></tr>
             <tr><td>Pathfinder</td><td>16</td></tr>
             <tr><td>Ranger</td><td>32</td></tr>
             <tr><td>Vanguard</td><td>48</td></tr>

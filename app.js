@@ -13,7 +13,7 @@
     try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* keep in memory */ }
   }
 
-  var state = { band: load('wl-band', '5–8'), skill: null, sub: null, q: '' };
+  var state = { band: load('wl-band', '5–8'), skill: null, sub: null, q: '', f: { home: false, epic: false, lab: false, any: false } };
   if (['K–1', '2–4', '5–8'].indexOf(state.band) < 0) state.band = '5–8';
   var picks = load('wl-picks', []).filter(function (id) { return BYID[id]; });
 
@@ -32,7 +32,7 @@
     return 'rgb(' + m(r) + ',' + m(g) + ',' + m(b) + ')';
   }
   function skillVars(s) { return '--c:' + s.col + ';--tint:' + tint(s.col, 0.85); }
-  function target() { return state.band === 'K–1' ? 1 : 2; }
+  function target() { return state.band === 'K–1' ? 3 : 2; }
   function guideMode() { return state.band === 'K–1'; }
   function imgFor(cid) { return D.img && D.img[cid]; }
   function credit(m) {
@@ -41,12 +41,24 @@
   }
   function compNum(cid) { return parseInt(cid.slice(3), 10); }
   function chNum(id) { return parseInt(id.split('.')[1], 10); }
+  function anyHobby(c) { return !!(c.hob && c.hob.indexOf('*') >= 0); }
+  function filtersOn() { var f = state.f; return f.home || f.epic || f.lab || f.any; }
+  // A challenge passes when it is in the chosen band and matches every filter that is switched on.
+  function passes(c) {
+    if (c.b !== state.band) return false;
+    var f = state.f;
+    if (f.home && !c.h) return false;
+    if (f.epic && c.z !== 'Epic') return false;
+    if (f.lab && !c.lab) return false;
+    if (f.any && !anyHobby(c)) return false;
+    return true;
+  }
 
   // Band-scoped structure: skill -> subskills (in order) -> competencies -> challenges
   function structure() {
     var out = {};
     D.skills.forEach(function (s) { out[s.k] = { subs: [], bySub: {}, count: 0 }; });
-    D.ch.filter(function (c) { return c.b === state.band; })
+    D.ch.filter(passes)
       .sort(function (a, b) { return compNum(a.c) - compNum(b.c) || chNum(a.id) - chNum(b.id); })
       .forEach(function (c) {
         var comp = D.comps[c.c], node = out[comp.k];
@@ -80,7 +92,7 @@
   function renderYear() {
     var t = target();
     document.getElementById('year-goal').textContent = t === 1
-      ? 'In K–1, finish 1 challenge in each of the 8 life skills this year.'
+      ? 'In K–1, cover at least 3 challenges in each of the 8 life skills this year, at least 2 a week.'
       : 'Finish 2 challenges in each of the 8 life skills this year. An Epic counts as 2. Save challenges to your plan and they fill in here.';
     document.getElementById('year-skills').innerHTML = D.skills.map(function (s) {
       var n = Math.min(creditsIn(s.k), t), dots = '';
@@ -105,7 +117,7 @@
           (state.skill === s.k ? ' aria-current="true"' : '') + '>' +
           '<span class="badge">' + icon(s.i) + '</span>' +
           '<span class="node-text"><span class="node-name">' + esc(s.n) + '</span>' +
-          '<span class="node-sub">' + S[s.k].count + ' challenges</span></span>' +
+          '<span class="node-sub">' + S[s.k].count + ' challenge' + (S[s.k].count === 1 ? '' : 's') + '</span></span>' +
           (guideMode() ? '' : '<span class="prog">' + n + '/' + t + '</span>') + '</button>';
       }).join('');
   }
@@ -127,18 +139,20 @@
           '<span class="node-text"><span class="node-name">' + esc(name) + '</span>' +
           '<span class="node-sub">' + node.bySub[name].count + ' challenge' + (node.bySub[name].count === 1 ? '' : 's') + '</span></span>' +
           icon('chevron-right').replace('class="ic"', 'class="ic chev"') + '</button>';
-      }).join('') : '<p class="empty-col">No challenges in this life skill for your grades yet.</p>');
+      }).join('') : '<p class="empty-col">' + (filtersOn() ? 'No challenges here match your filters. Switch a filter off to see more.' : 'No challenges in this life skill for your grades yet.') + '</p>');
   }
 
-  function chRow(c) {
+  function chRow(c, idea) {
     var on = picks.indexOf(c.id) >= 0;
     var tags = '';
     if (c.z === 'Epic') tags += '<span class="tag">' + icon('flag') + 'Epic, 2 credits</span>';
-    if (c.lab) tags += '<span class="tag">' + icon('users') + 'Crew Lab</span>';
+    if (c.lab) tags += '<span class="tag">' + icon('users') + 'Recommended Lab</span>';
     if (c.h) tags += '<span class="tag">' + icon('house') + 'Can do at home</span>';
-    if (c.b === 'K–1') tags += '<span class="tag">' + icon('users') + 'Guide-led, one day</span>';
+    if (anyHobby(c)) tags += '<span class="tag tag-hob">' + icon('sparkles') + 'Bring your hobby</span>';
+    if (c.b === 'K–1') tags += '<span class="tag">' + icon('users') + 'Guide-led</span>';
     if (c.gate) tags += '<span class="tag">' + icon('shield-alert') + 'Safety Gate</span>';
     return '<div class="ch"><button class="ch-open" data-open="' + c.id + '"><span class="ch-text">' + esc(c.t) + '</span>' +
+      (idea ? '<span class="ch-idea">' + esc(idea) + '</span>' : '') +
       (tags ? '<span class="tags">' + tags + '</span>' : '') + '</button>' +
       (c.b === 'K–1' ? '' : '<button class="pick" data-pick="' + c.id + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Remove from my plan' : 'Save to my plan') + '">' +
       icon(on ? 'bookmark-check' : 'bookmark') + '</button>') + '</div>';
@@ -150,7 +164,7 @@
       (im ? '<img class="comp-img" src="img/' + cid + '.jpg" alt="" loading="lazy" width="960" height="360">'
           : '<div class="comp-img comp-band" aria-hidden="true">' + icon(comp.i) + '</div>') +
       '<h3>' + icon(comp.i) + esc(comp.n) + '</h3>' +
-      list.map(chRow).join('') + '</div>';
+      list.map(function (c) { return chRow(c); }).join('') + '</div>';
   }
 
   function renderComps() {
@@ -200,33 +214,96 @@
   }
 
   // ---------- search ----------
-  var INDEX = {};
+  // Whole words, not letters inside words: "art" finds "art" and "arts", never "start" or "heart".
+  // A hobby word ("tech", "songwriting", "birdwatching") also finds challenges about that hobby,
+  // then lists "Bring your hobby" challenges you could do through it at the bottom.
+  function words(s) { return String(s).toLowerCase().match(/[a-z0-9:]+/g) || []; }
+  var WORDS = {}, SYN = {};
   D.ch.forEach(function (c) {
-    var comp = D.comps[c.c];
-    INDEX[c.id] = (c.t + ' ' + comp.n + ' ' + comp.s + ' ' + SK[comp.k].n).toLowerCase();
+    var comp = D.comps[c.c], set = {};
+    words(c.t + ' ' + comp.n + ' ' + comp.s + ' ' + SK[comp.k].n).forEach(function (w) { set[w] = 1; });
+    WORDS[c.id] = set;
   });
+  Object.keys(D.hob || {}).forEach(function (k) { D.hob[k].syn.forEach(function (w) { SYN[w] = k; }); });
+  function hobbyOf(term) {
+    return SYN[term] || SYN[term.replace(/(es|s)$/, '')] || SYN[term.replace(/s$/, '')] || null;
+  }
+  function hasWord(set, term) {
+    if (set[term] || set[term + 's'] || set[term + 'es']) return true;
+    if (term.length < 4) return false;
+    for (var w in set) if (w.indexOf(term) === 0) return true;
+    return false;
+  }
+  // Word families: "photography" also finds "photo" and "camera"; "tech" finds "coding", "app", "micro:bit".
+  var FAM = {};
+  (D.fam || []).forEach(function (f) { f.forEach(function (w) { FAM[w] = (FAM[w] || []).concat(f); }); });
+  function family(term) { return FAM[term] || FAM[term.replace(/(es|s)$/, '')] || FAM[term.replace(/s$/, '')] || []; }
+  function termMatches(c, term) {
+    var set = WORDS[c.id];
+    if (hasWord(set, term)) return true;
+    return family(term).some(function (w) { return set[w]; });
+  }
+  // Show a challenge's hobby idea only when it fits the hobby being searched (or works for any hobby).
+  function ideaFor(c, hobs) {
+    if (!c.hx) return '';
+    if (anyHobby(c)) return c.hx;
+    var lw = words(c.hx);
+    return hobs.some(function (k) { return D.hob[k].syn.some(function (w) { return lw.indexOf(w) >= 0; }); }) ? c.hx : '';
+  }
+  function bySkillOrder(a, b) {
+    var ka = D.skills.indexOf(SK[D.comps[a.c].k]), kb = D.skills.indexOf(SK[D.comps[b.c].k]);
+    return ka - kb || compNum(a.c) - compNum(b.c) || chNum(a.id) - chNum(b.id);
+  }
   function renderSearch() {
     var box = document.getElementById('search-results');
-    var terms = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+    var terms = words(state.q);
     var on = terms.length > 0;
+    var wasOn = !box.hidden;
     box.hidden = !on; tree.hidden = on;
     if (!on) return;
-    var hits = D.ch.filter(function (c) {
-      if (c.b !== state.band) return false;
-      var hay = INDEX[c.id];
-      return terms.every(function (t) { return hay.indexOf(t) >= 0; });
-    }).sort(function (a, b) {
-      var ka = D.skills.indexOf(SK[D.comps[a.c].k]), kb = D.skills.indexOf(SK[D.comps[b.c].k]);
-      return ka - kb || compNum(a.c) - compNum(b.c) || chNum(a.id) - chNum(b.id);
-    });
-    if (!hits.length) {
-      box.innerHTML = '<p class="empty-col">No grades ' + esc(state.band) + ' challenges match “' + esc(state.q) + '”. Try a shorter word, or clear the search to explore by life skill.</p>';
-      return;
+    if (!wasOn) {
+      var head = document.getElementById('explore-title');
+      try { head.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { head.scrollIntoView(); }
     }
-    var groups = [], by = {};
-    hits.forEach(function (c) { if (!by[c.c]) { by[c.c] = []; groups.push(c.c); } by[c.c].push(c); });
-    box.innerHTML = '<p class="col-title">' + hits.length + ' match' + (hits.length === 1 ? '' : 'es') + ' in grades ' + esc(state.band) + '</p>' +
-      groups.map(function (cid) { return compBlock(cid, by[cid]); }).join('');
+    var pool = D.ch.filter(passes);
+    var hits = pool.filter(function (c) {
+      return terms.every(function (t) { return termMatches(c, t); });
+    }).sort(bySkillOrder);
+    var hitIds = {}; hits.forEach(function (c) { hitIds[c.id] = 1; });
+    // Hobbies named in the search, in the order typed
+    var hobs = [];
+    terms.forEach(function (t) { var k = hobbyOf(t); if (k && hobs.indexOf(k) < 0) hobs.push(k); });
+    var extra = guideMode() || !hobs.length ? [] : pool.filter(function (c) {
+      if (hitIds[c.id] || !c.hob) return false;
+      return anyHobby(c) || hobs.some(function (k) { return c.hob.indexOf(k) >= 0; });
+    }).sort(function (a, b) {
+      // challenges that name this hobby come before the "any hobby" ones
+      return (anyHobby(a) - anyHobby(b)) || bySkillOrder(a, b);
+    });
+    var html = '';
+    if (hits.length) {
+      var groups = [], by = {};
+      hits.forEach(function (c) { if (!by[c.c]) { by[c.c] = []; groups.push(c.c); } by[c.c].push(c); });
+      html += '<p class="col-title">' + hits.length + ' match' + (hits.length === 1 ? '' : 'es') + ' in grades ' + esc(state.band) + '</p>' +
+        groups.map(function (cid) { return compBlock(cid, by[cid]); }).join('');
+    } else {
+      html += '<p class="empty-col">No grades ' + esc(state.band) + ' challenges name “' + esc(state.q) + '”' +
+        (filtersOn() ? ' with these filters on' : '') + '.' + (extra.length ? ' But you can bring it to the challenges below.' : ' Try a shorter word, or clear the search to explore by life skill.') + '</p>';
+    }
+    if (extra.length) {
+      var names = hobs.map(function (k) { return D.hob[k].n.toLowerCase(); }).join(' or ');
+      html += '<section class="hob-more"><h3>' + icon('sparkles') + 'Bring your hobby: ' + extra.length + ' more you can do through ' + esc(names) + '</h3>' +
+        '<p class="muted">These don’t mention ' + esc(names) + ', but you can do them through it. Tell your guide how you’ll use it.</p>' +
+        extra.map(function (c, i) {
+          var s = SK[D.comps[c.c].k];
+          var sub = '';
+          if (i === 0 && !anyHobby(c)) sub = '<p class="hob-sub">Good fits for ' + esc(names) + '</p>';
+          if (anyHobby(c) && (i === 0 || !anyHobby(extra[i - 1]))) sub = '<p class="hob-sub">Works with any hobby</p>';
+          return sub + '<div class="hob-item" style="' + skillVars(s) + '"><p class="hob-skill">' + icon(s.i) + esc(s.n) + ' › ' + esc(D.comps[c.c].n) + '</p>' +
+            chRow(c, ideaFor(c, hobs)) + '</div>';
+        }).join('') + '</section>';
+    }
+    box.innerHTML = html;
   }
 
   // ---------- detail sheet ----------
@@ -239,18 +316,31 @@
     var h = '<button class="icon-btn d-close" data-close aria-label="Close">' + icon('x') + '</button>' +
       '<div class="d-band" style="' + skillVars(s) + '"><span class="badge">' + icon(comp.i) + '</span>' +
       '<p class="d-crumb">' + esc(s.n) + ' › ' + esc(comp.s) + ' › ' + esc(comp.n) + '</p></div>' +
-      (imgFor(c.c) ? '<img class="d-img" src="img/' + c.c + '.jpg" alt="">' : '<div class="d-img comp-band" aria-hidden="true">' + icon(comp.i) + '</div>') +
+      (imgFor(c.c) ? '<img class="d-img" src="img/' + c.c + '.jpg" alt="">' : '<div class="d-img comp-band" style="' + skillVars(s) + '" aria-hidden="true">' + icon(comp.i) + '</div>') +
       '<h2 id="d-title" class="d-title">' + esc(c.t) + '</h2>' +
       '<div class="facts">' +
       '<div class="fact"><b>Grades</b>' + esc(c.gr) + '</div>' +
-      '<div class="fact"><b>Time</b>' + esc(c.b === 'K–1' && c.z === 'Week' ? 'One day, led by a guide' : c.tm) + '</div>' +
+      '<div class="fact"><b>Time</b>' + esc(c.b === 'K–1' && c.z === 'Week' ? 'Guide-led: a day or longer, as it needs' : c.tm) + '</div>' +
       '<div class="fact"><b>Credits</b>' + c.cr + '</div>' +
       '<div class="fact"><b>How you show it</b>' + esc(c.w) + '</div>' +
       '</div>';
     if (c.gate) h += '<div class="callout"><b>Safety Gate.</b> Pass this before: ' + esc(c.gate) + '. A guide or certified instructor checks it.</div>';
+    if (c.how && c.how.length) {
+      h += '<div class="sheet-sec"><h3>' + (c.b === 'K–1' ? 'How to run it (for guides)' : 'How to do it') + '</h3><ol class="cps steps-list">' +
+        c.how.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol></div>';
+    }
     if (c.st && c.st.length) {
-      h += '<div class="sheet-sec"><h3>' + (c.z === 'Epic' ? 'Checkpoints' : 'Steps') + '</h3><ol class="cps">' +
+      h += '<div class="sheet-sec"><h3>' + (c.z === 'Epic' ? 'Checkpoints' : 'Stages') + '</h3><ol class="cps">' +
         c.st.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol></div>';
+    }
+    if (c.hob && c.hob.length && c.b !== 'K–1') {
+      var specific = c.hob.filter(function (k) { return k !== '*' && D.hob[k]; });
+      h += '<div class="sheet-sec hob-sec"><h3>' + icon('sparkles') + 'Bring your hobby</h3>' +
+        (anyHobby(c) ? '<p><b>Any hobby works.</b> Do this through the thing you already love, and tell your guide how.</p>' : '') +
+        (specific.length ? '<p class="hob-chips">' + (anyHobby(c) ? 'Especially good for: ' : 'Good for: ') + specific.map(function (k) {
+          return '<span class="tag">' + icon(D.hob[k].i) + esc(D.hob[k].n) + '</span>';
+        }).join('') + '</p>' : '') +
+        (c.hx ? '<p class="hob-idea">' + esc(c.hx) + '</p>' : '') + '</div>';
     }
     h += '<div class="sheet-sec"><h3>Where to learn</h3>';
     if (c.r && c.r.length) {
@@ -259,7 +349,7 @@
         return '<li><a href="' + esc(r[2]) + '" target="_blank" rel="noopener">' + esc(r[0]) + icon('external-link') + '</a> <small>' + esc(r[1]) + '</small></li>';
       }).join('') + '</ul>';
     } else {
-      h += '<p>Ask your Field Guide. This one is learned in Labs and practice with your crew.</p>';
+      h += '<p>No outside lesson for this one: you learn it by doing, with the steps above and your crew. Ask your guide if you get stuck.</p>';
     }
     h += '</div><div class="sheet-actions">' + (c.b === 'K–1' ? '' : '<button class="btn" data-pick="' + c.id + '" aria-pressed="' + on + '">' +
       icon(on ? 'bookmark-check' : 'bookmark') + (on ? 'Saved to my plan' : 'Save to my plan') + '</button>') +
@@ -345,12 +435,43 @@
     });
     document.getElementById('k1-note').hidden = !guideMode();
     document.getElementById('year').hidden = guideMode();
+    // K–1 is guide-led in Labs: no home work, no hobby picks
+    ['home', 'any'].forEach(function (k) {
+      var b = document.querySelector('[data-filter="' + k + '"]');
+      if (b) b.hidden = guideMode();
+      if (guideMode()) state.f[k] = false;
+    });
+    syncFilters(); fixSelection();
     renderYear(); renderTree(); renderSearch(); refreshPicks();
+  }
+  function syncFilters() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-filter]'), function (b) {
+      b.setAttribute('aria-pressed', String(!!state.f[b.dataset.filter]));
+    });
+    var clear = document.getElementById('clear-filters');
+    if (clear) clear.hidden = !filtersOn();
+  }
+  // Keep the open subskill valid after filters or the band change
+  function fixSelection() {
+    S = structure();
+    if (state.skill && state.sub && !S[state.skill].bySub[state.sub]) {
+      state.sub = window.matchMedia('(max-width:820px)').matches ? null : (S[state.skill].subs[0] || null);
+    }
   }
 
   document.addEventListener('click', function (e) {
     var t = e.target.closest('button, a');
     if (!t) return;
+    if (t.dataset.filter) {
+      state.f[t.dataset.filter] = !state.f[t.dataset.filter];
+      syncFilters(); fixSelection(); renderTree(); renderSearch();
+      return;
+    }
+    if (t.id === 'clear-filters') {
+      Object.keys(state.f).forEach(function (k) { state.f[k] = false; });
+      syncFilters(); fixSelection(); renderTree(); renderSearch();
+      return;
+    }
     if (t.dataset.band) {
       state.band = t.dataset.band; save('wl-band', state.band);
       if (state.skill && state.sub && !S[state.skill]) state.sub = null;

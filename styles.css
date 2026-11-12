@@ -25,6 +25,7 @@ p{margin:0}
 a{color:var(--water)}
 button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--water);outline-offset:2px}
+[hidden]{display:none !important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .skip{position:absolute;left:-999px;top:8px;background:var(--forest);color:var(--cream);padding:8px 14px;border-radius:6px;z-index:10}
 .skip:focus{left:8px}
@@ -214,3 +215,35 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right
 @media (max-width:640px){.comp-img{height:130px}}
 .comp-band{display:grid;place-items:center;background:linear-gradient(135deg,var(--tint),var(--c));color:#fff}
 .comp-band .ic{width:64px;height:64px;stroke-width:1.5;opacity:.95}
+
+/* filters, hobbies, steps */
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.filters-label{font-size:15px;font-weight:700;color:var(--muted);margin-right:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:600;font-size:15px;cursor:pointer}
+.chip .ic{width:16px;height:16px}
+.chip:hover{border-color:var(--forest)}
+.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+.tag-hob{background:#F6E7D6;color:#7A3B0E}
+.ch-idea{font-size:15px;color:var(--muted);font-style:italic;line-height:1.4}
+.hob-more{margin-top:12px;padding-top:20px;border-top:3px dashed var(--line);display:flex;flex-direction:column;gap:10px;max-width:820px}
+.hob-more h3{font-size:21px;display:flex;align-items:center;gap:8px}
+.hob-more h3 .ic{color:var(--blaze)}
+.hob-list{display:flex;flex-direction:column;gap:8px}
+.hob-item{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:10px;padding:10px 16px 2px}
+.hob-skill{font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px}
+.hob-skill .ic{width:15px;height:15px;color:var(--c)}
+.hob-item .ch{border-top:0;padding-top:6px}
+.hob-sec h3{display:flex;align-items:center;gap:8px}
+.hob-sec h3 .ic{color:var(--blaze)}
+.hob-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:15px}
+.hob-idea{font-style:italic;color:var(--muted);font-size:16px}
+.cps.steps-list li{padding-left:2px}
+.bring{background:#F6E7D6;border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;max-width:820px}
+.bring h3{display:flex;align-items:center;gap:8px}
+.bring h3 .ic{color:var(--blaze)}
+.hob-sub{font-size:15px;font-weight:700;color:var(--ink);margin-top:6px}
+.hob-more .hob-item+.hob-item{margin-top:0}
+.hob-more{gap:8px}
+
+.k1-note{display:flex;flex-direction:column;gap:8px}
+.k1-note ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
