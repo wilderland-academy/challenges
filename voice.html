@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Feelings Practice · Wilderland Challenges</title>
+<meta name="description" content="Practice naming the feeling in a voice with no face to look at. Ten short clips, then check your score.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Zilla+Slab:wght@600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231F3A2C'/%3E%3Crect x='6' y='20' width='20' height='4' fill='%23E36A24'/%3E%3C/svg%3E">
+<style>
+  .vp-top{background:var(--forest);color:var(--cream)}
+  .vp-top .inner{max-width:760px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+  .vp-top a{color:#C9D6C0;font-weight:600}
+  .vp-top h1{font-size:clamp(34px,6vw,52px);line-height:1.05}
+  .vp-top .lede{font-size:clamp(17px,2.2vw,20px);color:#E3E9DD;max-width:620px}
+  .vp{max-width:760px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:22px}
+  .modes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .modes span{font-weight:600;margin-right:4px}
+  .mode{min-height:44px;padding:6px 16px;border-radius:8px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
+  .mode[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+  .mode-note{color:var(--muted);font-size:15px;flex-basis:100%}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:18px}
+  .prog{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .prog b{font-family:var(--slab);font-size:24px}
+  .dots{display:flex;gap:6px}
+  .dots i{width:14px;height:14px;border-radius:50%;background:var(--line);display:block}
+  .dots i.done{background:var(--forest)}
+  .dots i.now{background:var(--blaze)}
+  .play{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 24px;border-radius:12px;border:0;background:var(--blaze);color:#fff;font-family:var(--slab);font-weight:700;font-size:24px;cursor:pointer}
+  .play svg{width:26px;height:26px}
+  .play[data-state="playing"]{background:#A84A0A}
+  .q{font-weight:600}
+  .feelings{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .feel{min-height:56px;border-radius:10px;border:2px solid var(--line);background:var(--paper);font-size:20px;font-weight:700;cursor:pointer}
+  .feel:hover:not(:disabled){border-color:var(--forest)}
+  .feel[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+  .feel.right{background:#DCEBDD;border-color:#2F6B3E;color:#1E2A22}
+  .feel:disabled{cursor:default}
+  .say{min-height:28px;font-size:19px;font-weight:600}
+  .say.yes{color:#2F6B3E}
+  .say.no{color:#A84A0A}
+  .next{align-self:flex-end;min-height:48px;padding:8px 22px;border-radius:10px;border:2px solid var(--forest);background:var(--forest);color:var(--cream);font-weight:700;font-size:18px;cursor:pointer}
+  .next:disabled{opacity:.4;cursor:default}
+  .score{font-family:var(--slab);font-size:clamp(56px,12vw,88px);line-height:1;color:var(--forest)}
+  .verdict{font-size:20px;font-weight:600}
+  .review{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .review li{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
+  .review li.miss{border-color:#E2B48F;background:#FBF1E8}
+  .review button{min-height:40px;padding:4px 12px;border-radius:8px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
+  .review .n{font-weight:700;min-width:58px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .vp-tips{display:flex;flex-direction:column;gap:8px}
+  .vp-tips h2{font-size:24px}
+  .vp-tips ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+  .fine{color:var(--muted);font-size:14px;line-height:1.5}
+  .fine a{color:var(--water)}
+</style>
+</head>
+<body>
+<header class="vp-top">
+  <div class="inner">
+    <a href="index.html">Back to all challenges</a>
+    <h1>Voice feelings practice</h1>
+    <p class="lede">Ten short clips with no faces. Every voice says the same plain words, so the only clue is how the voice sounds. Listen, then pick the feeling.</p>
+  </div>
+</header>
+
+<main class="vp">
+  <div class="modes" role="group" aria-label="Mode">
+    <span>Mode</span>
+    <button class="mode" type="button" data-mode="practice" aria-pressed="true">Practice</button>
+    <button class="mode" type="button" data-mode="test" aria-pressed="false">Test</button>
+    <p class="mode-note" id="mode-note">Practice shows the answer after every clip.</p>
+  </div>
+
+  <section class="card" id="round" aria-labelledby="clip-label">
+    <div class="prog">
+      <b id="clip-label">Clip 1 of 10</b>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+    </div>
+    <button class="play" id="play" type="button" data-state="idle">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="play-text">Play clip</span>
+    </button>
+    <p class="q" id="q">What feeling do you hear?</p>
+    <div class="feelings" id="feelings" role="group" aria-labelledby="q"></div>
+    <p class="say" id="say" aria-live="polite"></p>
+    <button class="next" id="next" type="button" disabled>Next clip</button>
+  </section>
+
+  <section class="card" id="done" hidden aria-labelledby="score">
+    <p class="score" id="score">0 of 10</p>
+    <p class="verdict" id="verdict"></p>
+    <ol class="review" id="review"></ol>
+    <div class="actions">
+      <button class="next" id="again" type="button">New set of 10</button>
+    </div>
+  </section>
+
+  <section class="vp-tips">
+    <h2>How to get good at this</h2>
+    <ol>
+      <li>Listen to each clip more than once. Notice how fast, how loud, and how high or low the voice is.</li>
+      <li>In practice mode, when you miss one, play it again and listen for what gives it away.</li>
+      <li>Do a few sets on different days. The clips change every time.</li>
+      <li>When you score 8 or more twice in a row, ask your guide for the real check.</li>
+    </ol>
+    <p class="fine"><b>Guides:</b> switch to Test mode for the check. It hides every answer until the end, then shows the key. Start a fresh set so the clips are new to the student. The pass standard for FE-01.2 is 8 of 10.</p>
+  </section>
+
+  <p class="fine">Voice clips: The Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS) by Steven R. Livingstone and Frank A. Russo, <a href="https://doi.org/10.1371/journal.pone.0196391" target="_blank" rel="noopener">PLoS ONE, 2018</a>, licensed <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>. Wilderland picked 58 clips that at least 9 of 10 adult listeners named correctly in the authors' study, trimmed the silence and converted them to MP3. These edited clips are shared under the same license. The actors say “Kids are talking by the door” or “Dogs are sitting by the door.”</p>
+</main>
+
+<script>
+(function () {
+  var FEEL = ['happy', 'sad', 'angry', 'scared', 'surprised', 'calm'];
+  // [clip number, the feeling the actor was asked to show]
+  var CLIPS = [["01","sad"],["02","surprised"],["03","sad"],["04","surprised"],["05","calm"],["06","scared"],["07","scared"],["08","sad"],["09","happy"],["10","angry"],["11","angry"],["12","sad"],["13","sad"],["14","scared"],["15","calm"],["16","calm"],["17","angry"],["18","surprised"],["19","angry"],["20","scared"],["21","angry"],["22","surprised"],["23","scared"],["24","calm"],["25","surprised"],["26","calm"],["27","surprised"],["28","sad"],["29","scared"],["30","calm"],["31","happy"],["32","calm"],["33","calm"],["34","sad"],["35","happy"],["36","surprised"],["37","surprised"],["38","scared"],["39","surprised"],["40","sad"],["41","calm"],["42","angry"],["43","angry"],["44","happy"],["45","happy"],["46","sad"],["47","scared"],["48","calm"],["49","scared"],["50","angry"],["51","happy"],["52","scared"],["53","happy"],["54","happy"],["55","surprised"],["56","angry"],["57","sad"],["58","angry"]];
+  var mode = 'practice', set = [], i = 0, answers = [], last = [];
+  var audio = new Audio();
+  var $ = function (id) { return document.getElementById(id); };
+
+  function shuffle(a) { for (var k = a.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var t = a[k]; a[k] = a[j]; a[j] = t; } return a; }
+
+  // 10 clips: every feeling at least once, no feeling more than 3 times, none from the last set
+  function newSet() {
+    var pool = shuffle(CLIPS.filter(function (c) { return last.indexOf(c[0]) < 0; }));
+    var out = [], count = {};
+    FEEL.forEach(function (f) { var c = pool.find(function (x) { return x[1] === f && out.indexOf(x) < 0; }); if (c) { out.push(c); count[f] = 1; } });
+    pool.forEach(function (c) { if (out.length < 10 && out.indexOf(c) < 0 && (count[c[1]] || 0) < 3) { out.push(c); count[c[1]] = (count[c[1]] || 0) + 1; } });
+    set = shuffle(out); last = set.map(function (c) { return c[0]; }); i = 0; answers = [];
+    $('done').hidden = true; $('round').hidden = false; show();
+  }
+
+  function src(c) { return 'voice/v' + c[0] + '.mp3'; }
+  function play(c, btn) {
+    audio.pause(); audio.src = src(c); audio.currentTime = 0;
+    var p = audio.play(); if (p && p.catch) p.catch(function () {});
+    if (btn) { btn.dataset.state = 'playing'; $('play-text').textContent = 'Playing…'; }
+  }
+  audio.addEventListener('ended', function () { $('play').dataset.state = 'idle'; $('play-text').textContent = 'Play again'; });
+
+  function show() {
+    var c = set[i];
+    $('clip-label').textContent = 'Clip ' + (i + 1) + ' of 10';
+    $('dots').innerHTML = set.map(function (_, k) { return '<i class="' + (k < i ? 'done' : k === i ? 'now' : '') + '"></i>'; }).join('');
+    $('play').dataset.state = 'idle'; $('play-text').textContent = 'Play clip';
+    $('feelings').innerHTML = FEEL.map(function (f) { return '<button class="feel" type="button" data-f="' + f + '" aria-pressed="false">' + f[0].toUpperCase() + f.slice(1) + '</button>'; }).join('');
+    $('say').textContent = ''; $('say').className = 'say';
+    $('next').disabled = true; $('next').textContent = i === 9 ? 'See my score' : 'Next clip';
+  }
+
+  function choose(f) {
+    var c = set[i]; answers[i] = f;
+    var btns = $('feelings').querySelectorAll('.feel');
+    btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.f === f)); });
+    if (mode === 'practice') {
+      btns.forEach(function (b) { b.disabled = true; if (b.dataset.f === c[1]) b.classList.add('right'); });
+      if (f === c[1]) { $('say').textContent = 'Yes. That voice was ' + c[1] + '.'; $('say').className = 'say yes'; }
+      else { $('say').textContent = 'Not quite. That voice was ' + c[1] + '. Play it again and listen for it.'; $('say').className = 'say no'; }
+    } else {
+      $('say').textContent = 'Answer saved. You can change it until you go on.'; $('say').className = 'say';
+    }
+    $('next').disabled = false;
+  }
+
+  function finish() {
+    audio.pause();
+    var right = set.filter(function (c, k) { return answers[k] === c[1]; }).length;
+    $('round').hidden = true; $('done').hidden = false;
+    $('score').textContent = right + ' of 10';
+    $('verdict').textContent = right >= 8
+      ? (mode === 'test' ? 'That meets the standard: 8 or more.' : 'That meets the standard. Try another set to be sure it wasn’t luck.')
+      : 'Not yet. The standard is 8 of 10. Replay the ones you missed, then try a new set.';
+    $('review').innerHTML = set.map(function (c, k) {
+      var ok = answers[k] === c[1];
+      return '<li class="' + (ok ? '' : 'miss') + '"><span class="n">Clip ' + (k + 1) + '</span><span>' +
+        (ok ? 'You said <b>' + c[1] + '</b>. Right.' : 'You said <b>' + answers[k] + '</b>. It was <b>' + c[1] + '</b>.') +
+        '</span><button type="button" data-replay="' + k + '">Play</button></li>';
+    }).join('');
+    $('score').focus && $('score').setAttribute('tabindex', '-1'); $('score').focus();
+  }
+
+  $('play').addEventListener('click', function () { play(set[i], this); });
+  $('feelings').addEventListener('click', function (e) { var b = e.target.closest('.feel'); if (b && !b.disabled) choose(b.dataset.f); });
+  $('next').addEventListener('click', function () { audio.pause(); if (i === 9) { finish(); return; } i++; show(); play(set[i], $('play')); });
+  $('again').addEventListener('click', newSet);
+  $('review').addEventListener('click', function (e) { var b = e.target.closest('[data-replay]'); if (b) play(set[+b.dataset.replay]); });
+  document.querySelectorAll('.mode').forEach(function (b) {
+    b.addEventListener('click', function () {
+      mode = b.dataset.mode;
+      document.querySelectorAll('.mode').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      $('mode-note').textContent = mode === 'test' ? 'Test hides every answer until the end, then shows the key. A new set starts now.' : 'Practice shows the answer after every clip. A new set starts now.';
+      newSet();
+    });
+  });
+  newSet();
+})();
+</script>
+</body>
+</html>
