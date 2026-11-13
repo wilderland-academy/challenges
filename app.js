@@ -146,6 +146,7 @@
     var on = picks.indexOf(c.id) >= 0;
     var tags = '';
     if (c.z === 'Epic') tags += '<span class="tag">' + icon('flag') + 'Epic, 2 credits</span>';
+    if (c.ta) tags += '<span class="tag">' + icon('refresh-ccw') + 'Turnaround Epic</span>';
     if (c.lab) tags += '<span class="tag">' + icon('users') + 'Recommended Lab</span>';
     if (c.h) tags += '<span class="tag">' + icon('house') + 'Can do at home</span>';
     if (anyHobby(c)) tags += '<span class="tag tag-hob">' + icon('sparkles') + 'Bring your hobby</span>';
@@ -324,6 +325,7 @@
       '<div class="fact"><b>Credits</b>' + c.cr + '</div>' +
       '<div class="fact"><b>How you show it</b>' + esc(c.w) + '</div>' +
       '</div>';
+    if (c.ta) h += '<div class="callout"><b>Turnaround Epic.</b> It only counts when it fixes a real problem or builds something new for you. Before you start, a parent (or your guide, for a habit at school) confirms the problem with a week of evidence. At the end, they confirm what changed.</div>';
     if (c.gate) h += '<div class="callout"><b>Safety Gate.</b> Pass this before: ' + esc(c.gate) + '. A guide or certified instructor checks it.</div>';
     if (c.how && c.how.length) {
       h += '<div class="sheet-sec"><h3>' + (c.b === 'K–1' ? 'How to run it (for guides)' : 'How to do it') + '</h3><ol class="cps steps-list">' +
