@@ -307,6 +307,36 @@
     box.innerHTML = html;
   }
 
+
+  // ---------- passing it off at home (parents) ----------
+  // c.p: v video, l parent log, o witness note, t Turnaround check, x outside proof, g guide in person, s Safety Gate, k K-1
+  var HOME = {
+    v: ['video', 'Passing it off at home: video', 'A parent can film it instead of showing a guide. Use one continuous take from the last 7 days: your child says their name, the date and the challenge number, then does the whole attempt with no help. Keep everything the sentence measures in the shot, like a timer or the finished work.', 'video', 'Video rules'],
+    l: ['notebook-pen', 'Passing it off at home: parent log', 'A parent can sign a log. Agree on exactly what counts before day one, write each entry the same day, count only what you saw, and never round up. Your child brings the log to their guide and explains it.', 'logs', 'Log rules'],
+    o: ['eye', 'Passing it off at home: witness note', 'If a parent sees it happen, write a witness note the same day: when, where, and exactly what your child did and said. Don’t film other people. Your child explains it to their guide.', 'logs', 'Witness note rules'],
+    t: ['clipboard-check', 'Passing it off at home: Turnaround check', 'This Epic starts with a parent’s check. Before your child begins, write down what the problem looks like now, with a week of evidence. At the end, confirm what changed with the same kind of evidence. Your child runs the Epic; you confirm it.', 'turnaround', 'Turnaround checks'],
+    x: ['award', 'For parents: proof from outside school', 'Someone outside the family confirms this one: a customer, a judge, an instructor or a certificate. You can help your child find the place to do it and collect the proof. Your child brings it to their guide.', 'school', 'How checking works'],
+    g: ['user-check', 'For parents: checked at school', 'Help your child practice at home with the steps and links above. Your child shows their guide in person when ready.', 'school', 'How checking works'],
+    s: ['shield-check', 'For parents: Safety Gate', 'A guide or certified instructor checks this one, never a parent, because it unlocks activities where someone could get hurt.', 'school', 'How checking works']
+  };
+  function homeBox(c) {
+    var m = HOME[c.p]; if (!m) return '';
+    var home = 'vlot'.indexOf(c.p) >= 0;
+    return '<div class="home-box' + (c.p === 's' ? ' gate' : home ? '' : ' school') + '"><h3>' + icon(m[0]) + esc(m[1]) + '</h3><p>' + esc(m[2]) + '</p>' +
+      '<div class="row">' + (home ? '<button class="btn btn-sm" type="button" data-copy-email="' + c.id + '">' + icon('copy') + 'Copy email for the Field Guide</button>' : '') +
+      '<a class="btn btn-sm ghost" href="parents.html#' + m[3] + '">' + esc(m[4]) + '</a></div></div>';
+  }
+  function emailFor(c) {
+    var L = ['Subject: Home pass-off: [child’s first name and last initial], ' + c.id, '',
+      'Challenge ' + c.id + ' (grades ' + c.b + '):', '“' + c.t + '”', ''];
+    if (c.p === 'v') L.push('Date filmed:', 'Video link:', '');
+    if (c.p === 'l') L.push('Dates covered:', 'Log: photo attached. My child will bring the paper log to school and explain it.', '');
+    if (c.p === 'o') L.push('Date and place:', 'What I saw (exactly what my child did and said):', '');
+    if (c.p === 't') L.push('Before or after check:', 'Dates covered:', 'What the problem looked like, or what changed, with the evidence:', '');
+    L.push('I read the “I can” sentence with my child before the attempt. I saw this myself, I didn’t help during it, and I didn’t count anything I didn’t see.', '', 'Parent name:');
+    return L.join('\n');
+  }
+
   // ---------- detail sheet ----------
   var detail = document.getElementById('detail');
   var lastFocus = null;
@@ -353,7 +383,7 @@
     } else {
       h += '<p>No outside lesson for this one: you learn it by doing, with the steps above and your crew. Ask your guide if you get stuck.</p>';
     }
-    h += '</div><div class="sheet-actions">' + (c.b === 'K–1' ? '' : '<button class="btn" data-pick="' + c.id + '" aria-pressed="' + on + '">' +
+    h += '</div>' + homeBox(c) + '<div class="sheet-actions">' + (c.b === 'K–1' ? '' : '<button class="btn" data-pick="' + c.id + '" aria-pressed="' + on + '">' +
       icon(on ? 'bookmark-check' : 'bookmark') + (on ? 'Saved to my plan' : 'Save to my plan') + '</button>') +
       '<button class="btn ghost" data-close>Back</button></div>';
     if (imgFor(c.c)) h += '<p class="credit">' + credit(imgFor(c.c)) + '</p>';
@@ -375,7 +405,7 @@
     refreshPicks();
   }
   function refreshPicks() {
-    document.getElementById('picks-count').textContent = picks.length;
+    Array.prototype.forEach.call(document.querySelectorAll('.picks-count'), function (el) { el.textContent = picks.length; });
     Array.prototype.forEach.call(document.querySelectorAll('[data-pick]'), function (b) {
       var on = picks.indexOf(b.dataset.pick) >= 0;
       b.setAttribute('aria-pressed', String(on));
@@ -437,6 +467,7 @@
     });
     document.getElementById('k1-note').hidden = !guideMode();
     document.getElementById('year').hidden = guideMode();
+    Array.prototype.forEach.call(document.querySelectorAll('.nav [data-open-picks]'), function (b) { b.hidden = guideMode(); });
     // K–1 is guide-led in Labs: no home work, no hobby picks
     ['home', 'any'].forEach(function (k) {
       var b = document.querySelector('[data-filter="' + k + '"]');
@@ -502,7 +533,8 @@
     if (t.dataset.unpick) { setPick(t.dataset.unpick, false); return; }
     if (t.dataset.open) { if (picksDlg.open) picksDlg.close(); openDetail(t.dataset.open); return; }
     if (t.hasAttribute('data-close')) { t.closest('dialog').close(); return; }
-    if (t.id === 'open-picks') { lastFocus = t; renderPicks(); picksDlg.showModal(); return; }
+    if (t.hasAttribute('data-open-picks')) { lastFocus = t; renderPicks(); picksDlg.showModal(); return; }
+    if (t.dataset.copyEmail) { var ce = BYID[t.dataset.copyEmail]; if (ce) copyText(emailFor(ce), 'Email copied. Paste it into a new email to your child’s Field Guide.'); return; }
     if (t.id === 'copy-picks') {
       copyText('My Wilderland plan\n\n' + picks.map(function (id) {
         var c = BYID[id]; return '- ' + c.t + ' (' + SK[D.comps[c.c].k].n + ', ' + c.id + ')';
@@ -533,7 +565,7 @@
   (function () {
     var el = document.getElementById('credits-list');
     if (!el || !D.img) return;
-    el.innerHTML = Object.keys(D.img).sort().map(function (cid) {
+    el.innerHTML = '<li><b>Top of the page.</b> Photo: <a href="https://commons.wikimedia.org/wiki/File:US_Utah_Ogden_bonneville_shoreline_trail.JPG" target="_blank" rel="noopener">US Utah Ogden bonneville shoreline trail</a> by Thomas Wozniak, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></li>' + Object.keys(D.img).sort().map(function (cid) {
       return '<li><b>' + esc(D.comps[cid].n) + '.</b> ' + credit(D.img[cid]) + '</li>';
     }).join('');
     document.getElementById('credits').hidden = !Object.keys(D.img).length;

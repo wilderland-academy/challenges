@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Pass-off Log Sheet</title>
+<meta name="description" content="A printable log sheet for Wilderland home pass-offs: one dated entry per day, initialed the same day.">
+<meta name="theme-color" content="#015640">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23015640'/%3E%3Cpath d='M3 24 10 11 17 24Z' fill='%23fff'/%3E%3Cpath d='M10 24 16 14 22 24Z' fill='%2300B451'/%3E%3Cpath d='M15 24 22 10 29 24Z' fill='%23D5F367'/%3E%3C/svg%3E">
+<style>
+.sheet-page{max-width:900px;margin:0 auto;padding:32px var(--gutter-r) 48px var(--gutter-l);display:flex;flex-direction:column;gap:16px}
+.sheet-page h1{font-size:clamp(30px,4vw,40px)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+.field{border-bottom:1.5px solid var(--ink);padding:18px 0 4px;font-size:14px;color:var(--muted)}
+.field.wide{grid-column:1/-1;padding-top:30px}
+.logt-wrap{overflow-x:auto}
+.logt{width:100%;min-width:560px;border-collapse:collapse;font-size:14px}
+.logt th{background:var(--green);color:#fff;text-align:left;padding:8px 10px;font-weight:600}
+.logt td{border:1px solid #BFC5BC;height:34px;padding:0 8px}
+.logt td:first-child{width:16%}.logt td:last-child{width:12%}
+.sign{display:flex;flex-direction:column;gap:6px;font-size:15px;color:var(--ink)}
+.no-print{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+@media print{
+  @page{margin:12mm}
+  .nav,.no-print{display:none!important}
+  .sheet-page{padding:0;gap:10px}
+  body{font-size:12px}
+  .logt td{height:26px}
+  .logt th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="./" aria-label="Wilderland Challenges home"><img src="img/wilderland-logo.png" width="192" height="24" alt="Wilderland"></a>
+    <nav class="nav-links" aria-label="On this site">
+      <a class="wide" href="./#explore-title">Challenges</a>
+      <a href="parents.html">For parents</a>
+    </nav>
+  </div>
+</header>
+<main class="sheet-page">
+  <div class="no-print">
+    <button class="btn" type="button" id="print"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-printer"/></svg>Print this sheet</button>
+    <a href="parents.html#logs">Read the log rules first</a>
+  </div>
+  <h1>Home pass-off log</h1>
+  <p>Write each entry the same day. Count only what you saw. No rounding up. For longer challenges, print more than one sheet.</p>
+  <div class="fields">
+    <div class="field">Child’s name</div>
+    <div class="field">Challenge number</div>
+    <div class="field wide">The “I can” sentence, word for word</div>
+    <div class="field wide">What counts, agreed before day one (for example: “no reminders,” “lights out by 8:30”)</div>
+  </div>
+  <div class="logt-wrap">
+    <table class="logt">
+      <thead><tr><th scope="col">Date</th><th scope="col">What happened: times, numbers, exactly what your child did</th><th scope="col">Initials</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="sign">
+    <p>I saw this myself. Every entry was written the same day. I didn’t count anything I didn’t see.</p>
+    <div class="fields"><div class="field">Parent signature</div><div class="field">Date</div></div>
+  </div>
+</main>
+<script>
+(function () {
+  var rows = '';
+  for (var i = 0; i < 16; i++) rows += '<tr><td></td><td></td><td></td></tr>';
+  document.getElementById('rows').innerHTML = rows;
+  document.getElementById('print').addEventListener('click', function () { window.print(); });
+})();
+</script>
+</body>
+</html>

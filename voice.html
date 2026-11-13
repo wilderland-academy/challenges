@@ -5,51 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Voice Feelings Practice · Wilderland Challenges</title>
 <meta name="description" content="Practice naming the feeling in a voice with no face to look at. Ten short clips, then check your score.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Zilla+Slab:wght@600;700&display=swap">
+<meta name="theme-color" content="#015640">
+<link rel="preload" href="fonts/uncut-sans-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/uncut-sans-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231F3A2C'/%3E%3Crect x='6' y='20' width='20' height='4' fill='%23E36A24'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23015640'/%3E%3Cpath d='M3 24 10 11 17 24Z' fill='%23fff'/%3E%3Cpath d='M10 24 16 14 22 24Z' fill='%2300B451'/%3E%3Cpath d='M15 24 22 10 29 24Z' fill='%23D5F367'/%3E%3C/svg%3E">
 <style>
-  .vp-top{background:var(--forest);color:var(--cream)}
+  .vp-top{background:var(--lime-tint)}
   .vp-top .inner{max-width:760px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
-  .vp-top a{color:#C9D6C0;font-weight:600}
-  .vp-top h1{font-size:clamp(34px,6vw,52px);line-height:1.05}
-  .vp-top .lede{font-size:clamp(17px,2.2vw,20px);color:#E3E9DD;max-width:620px}
+  .vp-top a{color:var(--green);font-weight:600}
+  .vp-top h1{font-size:clamp(36px,6vw,56px);line-height:1.08}
+  .vp-top .lede{font-size:clamp(17px,2.2vw,20px);max-width:620px}
   .vp{max-width:760px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:22px}
   .modes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .modes span{font-weight:600;margin-right:4px}
-  .mode{min-height:44px;padding:6px 16px;border-radius:8px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
-  .mode[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+  .mode{min-height:44px;padding:6px 16px;border-radius:8px;border:2px solid transparent;background:var(--chip);color:#121213;cursor:pointer;font-weight:600}
+  .mode:hover{border-color:var(--green)}
+  .mode[aria-pressed="true"]{background:var(--green);color:#fff}
   .mode-note{color:var(--muted);font-size:15px;flex-basis:100%}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:18px}
-  .prog{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  .prog b{font-family:var(--slab);font-size:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px}
+  .prog{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:0;border-radius:0;background:none;font-size:inherit}
+  .prog b{font-size:24px;letter-spacing:-.02em}
   .dots{display:flex;gap:6px}
   .dots i{width:14px;height:14px;border-radius:50%;background:var(--line);display:block}
-  .dots i.done{background:var(--forest)}
-  .dots i.now{background:var(--blaze)}
-  .play{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 24px;border-radius:12px;border:0;background:var(--blaze);color:#fff;font-family:var(--slab);font-weight:700;font-size:24px;cursor:pointer}
+  .dots i.done{background:var(--green)}
+  .dots i.now{background:var(--green-2)}
+  .play{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 24px;border-radius:8px;border:0;background:var(--lime);color:#121213;font-weight:700;font-size:22px;letter-spacing:-.01em;cursor:pointer}
+  .play:hover{background:#C9EA4F}
   .play svg{width:26px;height:26px}
-  .play[data-state="playing"]{background:#A84A0A}
+  .play[data-state="playing"]{background:var(--green);color:#fff}
   .q{font-weight:600}
   .feelings{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-  .feel{min-height:56px;border-radius:10px;border:2px solid var(--line);background:var(--paper);font-size:20px;font-weight:700;cursor:pointer}
-  .feel:hover:not(:disabled){border-color:var(--forest)}
-  .feel[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
-  .feel.right{background:#DCEBDD;border-color:#2F6B3E;color:#1E2A22}
+  .feel{min-height:56px;border-radius:8px;border:2px solid var(--line);background:var(--paper);color:var(--ink);font-size:20px;font-weight:600;cursor:pointer}
+  .feel:hover:not(:disabled){border-color:var(--green)}
+  .feel[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+  .feel.right{background:var(--lime-tint);border-color:var(--green);color:var(--ink)}
   .feel:disabled{cursor:default}
   .say{min-height:28px;font-size:19px;font-weight:600}
-  .say.yes{color:#2F6B3E}
-  .say.no{color:#A84A0A}
-  .next{align-self:flex-end;min-height:48px;padding:8px 22px;border-radius:10px;border:2px solid var(--forest);background:var(--forest);color:var(--cream);font-weight:700;font-size:18px;cursor:pointer}
+  .say.yes{color:var(--green)}
+  .say.no{color:#9A4A0B}
+  .next{align-self:flex-end;min-height:48px;padding:8px 22px;border-radius:8px;border:0;background:var(--lime);color:#121213;font-weight:600;font-size:18px;letter-spacing:.02em;cursor:pointer}
   .next:disabled{opacity:.4;cursor:default}
-  .score{font-family:var(--slab);font-size:clamp(56px,12vw,88px);line-height:1;color:var(--forest)}
+  .score{font-weight:700;letter-spacing:-.04em;font-size:clamp(56px,12vw,88px);line-height:1;color:var(--green)}
   .verdict{font-size:20px;font-weight:600}
   .review{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
   .review li{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
   .review li.miss{border-color:#E2B48F;background:#FBF1E8}
-  .review button{min-height:40px;padding:4px 12px;border-radius:8px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
+  .review button{min-height:40px;padding:4px 12px;border-radius:8px;border:0;background:var(--chip);color:#121213;cursor:pointer;font-weight:600}
   .review .n{font-weight:700;min-width:58px}
   .actions{display:flex;gap:10px;flex-wrap:wrap}
   .vp-tips{display:flex;flex-direction:column;gap:8px}
@@ -60,6 +62,15 @@
 </style>
 </head>
 <body>
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="./" aria-label="Wilderland Challenges home"><img src="img/wilderland-logo.png" width="192" height="24" alt="Wilderland"></a>
+    <nav class="nav-links" aria-label="On this site">
+      <a class="wide" href="./#explore-title">Challenges</a>
+      <a href="parents.html">For parents</a>
+    </nav>
+  </div>
+</header>
 <header class="vp-top">
   <div class="inner">
     <a href="index.html">Back to all challenges</a>
