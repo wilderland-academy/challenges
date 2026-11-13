@@ -161,7 +161,7 @@ main{max-width:1180px;margin:0 auto;padding:0 var(--gutter-r) 0 var(--gutter-l)}
 
 /* ---------- how it works: a full-width pale lime band, like the school's program sections ---------- */
 .band-lime{background:var(--lime-tint)}
-.how{padding:64px 0 72px;display:flex;flex-direction:column;gap:36px}
+.how{padding-block:64px 72px;display:flex;flex-direction:column;gap:36px}
 .how>h2{max-width:20em}
 .steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;counter-reset:s}
 .steps li{counter-increment:s;background:var(--card);border-radius:20px;padding:20px}
@@ -185,7 +185,7 @@ main{max-width:1180px;margin:0 auto;padding:0 var(--gutter-r) 0 var(--gutter-l)}
 
 /* ---------- parents band: deep green, like the school's results section ---------- */
 .band-green{background:var(--green);color:var(--on-dark-2)}
-.parents-cta{padding:64px 0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px 56px;align-items:center}
+.parents-cta{padding-block:64px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px 56px;align-items:center}
 .parents-cta h2{color:var(--on-dark)}
 .parents-cta h2 span{display:block;color:var(--lime)}
 .parents-cta p{font-size:17px;max-width:36em;margin-top:16px}
@@ -281,7 +281,7 @@ main{max-width:1180px;margin:0 auto;padding:0 var(--gutter-r) 0 var(--gutter-l)}
   .search{flex:1 1 100%}
   .band{min-width:0;flex:1 1 0;font-size:18px}
   .bands-label{flex:1 1 100%}
-  .how{padding:48px 0 56px}
+  .how{padding-block:48px 56px}
   .sheet{width:100vw;max-width:100vw;max-height:100vh;height:100vh;border-radius:0;margin:0}
   .home-box{margin:0 16px}
 }
