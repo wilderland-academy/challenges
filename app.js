@@ -337,6 +337,22 @@
     return L.join('\n');
   }
 
+
+  // ---------- AI starter prompts (built in ai.js from the challenge's own sentence and steps) ----------
+  function aiBox(c) {
+    if (!window.WLAI) return '';
+    var P = window.WLAI.prompts(c), k1 = c.b === 'K–1';
+    return '<div class="sheet-sec ai-sec"><h3>' + icon('bot') + (k1 ? 'AI prompts for guides' : 'Get help from AI') + '</h3>' +
+      '<p class="ai-note">' + (k1
+        ? 'Copy a prompt into your AI to plan and run this Lab. Check anything about safety yourself.'
+        : 'Copy a prompt and paste it into the AI your guide set up. AI is your coach: it can plan with you, explain, quiz you and give tips. It can be wrong, it can’t do the challenge for you, and it can’t pass you. Anything you hand in must be your own work. Never type your full name, address or school.') + '</p>' +
+      '<ul class="ai-list">' + P.map(function (p, i) {
+        return '<li><div class="ai-head"><div><b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></div>' +
+          '<button class="btn btn-sm ghost" type="button" data-copy-ai="' + c.id + '|' + i + '">' + icon('copy') + 'Copy prompt</button></div>' +
+          '<details><summary>See the prompt</summary><pre class="template">' + esc(p[2]) + '</pre></details></li>';
+      }).join('') + '</ul></div>';
+  }
+
   // ---------- detail sheet ----------
   var detail = document.getElementById('detail');
   var lastFocus = null;
@@ -383,7 +399,7 @@
     } else {
       h += '<p>No outside lesson for this one: you learn it by doing, with the steps above and your crew. Ask your guide if you get stuck.</p>';
     }
-    h += '</div>' + homeBox(c) + '<div class="sheet-actions">' + (c.b === 'K–1' ? '' : '<button class="btn" data-pick="' + c.id + '" aria-pressed="' + on + '">' +
+    h += '</div>' + aiBox(c) + homeBox(c) + '<div class="sheet-actions">' + (c.b === 'K–1' ? '' : '<button class="btn" data-pick="' + c.id + '" aria-pressed="' + on + '">' +
       icon(on ? 'bookmark-check' : 'bookmark') + (on ? 'Saved to my plan' : 'Save to my plan') + '</button>') +
       '<button class="btn ghost" data-close>Back</button></div>';
     if (imgFor(c.c)) h += '<p class="credit">' + credit(imgFor(c.c)) + '</p>';
@@ -534,6 +550,7 @@
     if (t.dataset.open) { if (picksDlg.open) picksDlg.close(); openDetail(t.dataset.open); return; }
     if (t.hasAttribute('data-close')) { t.closest('dialog').close(); return; }
     if (t.hasAttribute('data-open-picks')) { lastFocus = t; renderPicks(); picksDlg.showModal(); return; }
+    if (t.dataset.copyAi) { var ca = t.dataset.copyAi.split('|'), cc = BYID[ca[0]]; if (cc && window.WLAI) copyText(window.WLAI.prompts(cc)[+ca[1]][2], 'Prompt copied. Paste it into your AI.'); return; }
     if (t.dataset.copyEmail) { var ce = BYID[t.dataset.copyEmail]; if (ce) copyText(emailFor(ce), 'Email copied. Paste it into a new email to your child’s Field Guide.'); return; }
     if (t.id === 'copy-picks') {
       copyText('My Wilderland plan\n\n' + picks.map(function (id) {

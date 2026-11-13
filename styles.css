@@ -375,3 +375,16 @@ main{max-width:1180px;margin:0 auto;padding:0 var(--gutter-r) 0 var(--gutter-l)}
   .doc-hero{grid-template-columns:1fr;padding-top:36px}
   .two,.example{grid-template-columns:1fr}
 }
+
+/* AI starter prompts in each challenge */
+.ai-sec h3{display:flex;align-items:center;gap:8px}
+.ai-sec h3 .ic{color:var(--green)}
+.ai-note{font-size:15px;color:var(--muted)}
+.ai-list{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ai-list li{background:var(--lime-tint);border-radius:12px;padding:12px 14px}
+.ai-head{display:flex;gap:10px 14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ai-head b{display:block;color:var(--ink)}
+.ai-head span{font-size:14px;color:var(--muted)}
+.ai-list details{margin-top:6px}
+.ai-list summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--green)}
+.ai-list .template{margin-top:8px;font-size:14px;max-width:none}
